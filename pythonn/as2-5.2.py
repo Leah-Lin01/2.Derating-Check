@@ -76,32 +76,11 @@ def scan_image_with_vlm(image):
         ]
         """
         
-        # 將模型名稱確實升級為最新的 'gemini-2.5-flash'
-        import time
-
-max_retries = 3
-
-for attempt in range(max_retries):
-    try:
-        response = client.models.generate_content(
-            model='gemini-2.5-flash',
-            contents=[image, prompt]
+        response = client.models.generate_content( 
+            model='gemini-2.5-flash', contents=[image, prompt] # 此處會完美撈取到上方定義好的 prompt 
         )
 
-        break
 
-    except Exception as e:
-        error_message = str(e)
-
-        if "503" in error_message or "UNAVAILABLE" in error_message:
-            if attempt < max_retries - 1:
-                wait_time = 5 * (attempt + 1)
-                print(f"模型目前忙碌，{wait_time} 秒後重新嘗試...")
-                time.sleep(wait_time)
-            else:
-                raise Exception("模型目前持續忙碌，請稍後再試。")
-        else:
-            raise e
         
         json_text = response.text.strip()
         json_text = re.sub(r'^```json\s*', '', json_text, flags=re.MULTILINE)
