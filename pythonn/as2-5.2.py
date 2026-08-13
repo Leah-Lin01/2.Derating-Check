@@ -129,7 +129,8 @@ def calculate_derating_metrics(user_text, derating_target=0.80):
         if not line or "=" not in line or line.upper().startswith("V="):
             continue
 
-        # 只要數值開頭是 0 歐姆，就會直接改成0.002
+        # 在所有解析之前，只要發現數值開頭是 0 歐姆
+        # 不論是 =0_、=0R_ 還是 =0OHM_，直接在原始字串就把它掉包成 0.002！
         line_upper = line.upper()
         if "=0_" in line_upper:
             line = line.replace("=0_", "=0.002_")
@@ -207,7 +208,7 @@ def calculate_derating_metrics(user_text, derating_target=0.80):
             if 'K' in clean_val_str: val_num *= 1000
             elif 'M' in clean_val_str: val_num *= 1000000
 
-            # 如果 val_num 還是 <= 0.002，就絕對是跳線！
+            # 把 0 掉變成 0.002 ，這裡如果 val_num 還是 <= 0.002，就絕對是跳線！
             if val_num <= 0.002:
                 val_num = 0.002
                 is_jumper = True
